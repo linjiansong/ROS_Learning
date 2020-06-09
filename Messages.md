@@ -27,4 +27,18 @@ time stamp
 #Frame this data is associated with
 string frame_id
 ```
+## (3)sensor_msgs::PointCloud2————点云数据
+```
+Header header //文件头  
+uint32 height //点云数据宽度
+uint32 width  //点云数据长度
+
+PointField[] fields
+
+bool    is_bigendian //Big-endian：将高序字节存储在起始地址
+uint32  point_step   # Length of a point in bytes
+uint32  row_step     # Length of a row in bytes
+uint8[] data         # Actual point data, size is (row_step*height)
+bool is_dense        //如果没有无效点，则为True
+```
 
