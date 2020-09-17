@@ -25,7 +25,8 @@ $ catkin_create_pkg learning_service rospy std_msgs geometry_msgs turtlesim
 $ cd ~/catkin_ws
 $ catkin_make
 ```
-#话题消息.srv的定义
+# 话题消息.srv的定义
+
 ## Person.srv
 ```
 （以"—"来隔开请求和响应）
@@ -43,19 +44,19 @@ string result
 ```
 ## 编译
 
-    在package.xml中添加功能包依赖：
+在package.xml中添加功能包依赖：
 ```
 <build_depend>message_generation</build_depend>
 <exec_depend>message_runtime</exec_depend>
 ```
-    在CMakeLists.txt添加编译选项：
+在CMakeLists.txt添加编译选项：
 ```
 find_package( ...... message_generation)
 add_service_files(FILES Person.srv)
 generate_messages(DEPENDENCIES std_msgs)
 catkin_package(CATKIN_DEPENDS geometry_msgs rospy std_msgs turtlesim message_runtime)
 ```
-  编译：
+编译：
 ```
 $ cd ~/catkin_ws
 $ catkin_make
@@ -72,22 +73,22 @@ import rospy
 from learning_service.srv import Person, PersonRequest
 
 def person_client():
-	# ROS节点初始化
-    rospy.init_node('person_client')
-
-	# 发现/spawn服务后，创建一个服务客户端，连接名为/spawn的service
+    # ROS节点初始化(甚至可以不调用init_node()来初始化节点)
+    rospy.init_node('person_client')//此行可省略
+    
+    # 发现/spawn服务后，创建一个服务客户端，连接名为/spawn的service（是便利的参数阻塞直到服务名为show_person的服务生效）
     rospy.wait_for_service('/show_person')
     try:
-        person_client = rospy.ServiceProxy('/show_person', Person)
+        person_client = rospy.ServiceProxy('/show_person', Person)//（因为我们已声明服务类型Person，它生成PersonRequest对象）
 
-		# 请求服务调用，输入请求数据
+	# 请求服务调用，输入请求数据（我们使用实例就如平常的函数一样）
         response = person_client("Tom", 20, PersonRequest.male)
         return response.result
     except rospy.ServiceException, e:
         print "Service call failed: %s"%e
 
 if __name__ == "__main__":
-	#服务调用并显示调用结果
+    #服务调用并显示调用结果
     print "Show person result : %s" %(person_client())
 ```
 # 服务端Server的编写
@@ -97,23 +98,23 @@ if __name__ == "__main__":
 # 该例程将执行/show_person服务，服务数据类型learning_service::Person
 
 import rospy
-from learning_service.srv import Person, PersonResponse
+from learning_service.srv import Person, PersonResponse//????????????????
 
 def personCallback(req):
-	# 显示请求数据
+    # 显示请求数据
     rospy.loginfo("Person: name:%s  age:%d  sex:%d", req.name, req.age, req.sex)
 
-	# 反馈数据
+    # 反馈数据(传递实例PersonResponse和返回PersonResponse实例。)
     return PersonResponse("OK")
 
 def person_server():
-	# ROS节点初始化
+    # ROS节点初始化
     rospy.init_node('person_server')
 
-	# 创建一个名为/show_person的server，注册回调函数personCallback
+    //声明了一个 'show_person'的服务， Person， 调用personCallback回调函数
     s = rospy.Service('/show_person', Person, personCallback)
 
-	# 循环等待回调函数
+    # 循环等待回调函数
     print "Ready to show person informtion."
     rospy.spin()
 
