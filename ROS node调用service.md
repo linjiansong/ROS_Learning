@@ -222,4 +222,3 @@ catkin_package(
     add_executable(example_listener_msg src/example_listener_msg.cpp)
     target_link_libraries(example_listener_msg ${catkin_LIBRARIES})
 ```
-# 测试 
